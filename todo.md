@@ -3,7 +3,7 @@
 > 每次开发后必须更新本文档：勾选完成项、移入"已完成"区域、记录关键决策。
 > 产品思想参见 [development.md](./development.md)，架构与技术栈参见 [CLAUDE.md](./CLAUDE.md)。
 
-**产品定位**：ToC，面向短视频创作者
+**产品定位**：ToC，面向短视频创作者（Agent Video Clip — 不只是生成视频，更是 AI 剪辑视频）
 **开发策略**：前端优先——先把 UI/交互跑通（用 mock 数据），明确产品形态后再接后端
 **技术栈速查**：
 - 前端：Next.js 15 + shadcn/ui v4 + Tailwind v4 + TanStack Query + Zustand + Vercel AI SDK v5 + Better Auth
@@ -12,7 +12,22 @@
 
 ---
 
-## 当前阶段：Phase 2.6 — 主页重构（Chat-first）
+## 当前阶段：Phase 2.7 — Landing Page 品牌重塑 + Node BFF 职责梳理
+
+### 2.7 — Landing Page 品牌重塑（Agent Video Clip）✅
+
+- [x] 全站文案重写：突出「不只是生成视频，更是 AI 剪辑视频」核心定位
+- [x] Hero 区：标题改为「不只是生成视频 / 更是 AI 剪辑视频」，副标题面向视频创作者
+- [x] Hero Mockup：示例从科普视频改为产品测评剪辑方案
+- [x] Features：6 大能力重写（AI 脚本+剪辑规划、领域化剪辑 Skill、逐段确认、一致性引擎、专业时间轴剪辑台、自然语言剪辑）
+- [x] HowItWorks：四步流程围绕「描述需求→AI 生成剪辑方案→逐段确认→时间轴精修导出」
+- [x] DualMode：Agent 创作模式（对话驱动创作与剪辑）+ Studio 剪辑模式（专业剪辑台）
+- [x] Skills：产品测评、知识讲解、品牌营销、课程教程、口播 Vlog、新闻解读
+- [x] FAQ：新增「适合什么样的视频创作者」「和 Premiere/剪映有什么区别」
+- [x] SocialProof / CTA / Footer 文案统一更新
+- [x] Node.js BFF 层职责梳理完成（为 Phase 3 Python 接入做准备）
+
+---
 
 ### 2.6 — 主页 & 对话流程重构 ✅
 
@@ -153,14 +168,25 @@
 
 ---
 
-## Phase 3 — 后端 Python FastAPI 搭建
+## Phase 2.8 — Node BFF 数据持久化（Phase 3 前置）
+
+- [ ] 完整业务 Prisma Schema（Project / Conversation / Message / Skill 等表）
+- [ ] Project CRUD API（Server Actions 或 API Routes）
+- [ ] Conversation / Message 持久化（当前 Zustand 纯内存 → PostgreSQL）
+- [ ] SSE 流式中转接口占位（Node ↔ Python 通信协议设计）
+- [ ] 积分系统 schema 占位（credits 字段、操作日志表）
+- [ ] 文件上传协调（S3 presigned URL 签发接口）
+
+---
+
+## Phase 3 — Python FastAPI 执行层搭建
 
 - [ ] 初始化 Python 项目（`uv` 管理依赖）
 - [ ] FastAPI + Uvicorn 基础结构
-- [ ] 连接 PostgreSQL
-- [ ] 基础路由
-- [ ] CORS 配置
-- [ ] 前端替换 mock → 真实 API
+- [ ] asyncpg 连接 PostgreSQL（只读写，不管 schema）
+- [ ] `/api/chat` SSE 流式接口（接收消息，返回 Agent 回复流）
+- [ ] CORS 配置（只允许 Node BFF 访问）
+- [ ] 健康检查 + 日志
 
 ---
 
@@ -229,3 +255,10 @@
 - AI 生成项目标题（`/api/generate-title`，当前规则提取，后续接 Claude）
 - 共享侧边栏 `AppSidebar`（Zustand store 管理对话状态）
 - 对话页全宽聊天布局 + 打字指示器 + mock 多轮回复
+
+**2026-03-17** Phase 2.7 Landing Page 品牌重塑完成。关键决策：
+- 核心定位确定为 **Agent Video Clip**：不只是生成视频，更是 AI 剪辑视频
+- 全站文案重写，面向视频创作者（测评博主、UP 主、Vlog 博主、带货主播）
+- Skill 体系调整：新增「产品测评」，「儿童故事」→「课程教程」，「口播+B-roll」→「口播 Vlog」
+- Node.js BFF 职责梳理：Auth/DB/积分/文件/SSE 中转归 Node，AI Agent/生成归 Python
+- 新增 Phase 2.8（Node BFF 数据持久化）作为 Phase 3 前置任务

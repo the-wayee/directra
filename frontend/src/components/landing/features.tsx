@@ -13,8 +13,8 @@ const features = [
         <rect x="14" y="14" width="7" height="7" rx="1" />
       </svg>
     ),
-    title: "项目式管理",
-    description: "每个视频是一个完整项目，可以持续推进、暂停、修改、多版本管理。不是用完即弃的一次性生成。",
+    title: "AI 脚本 + 剪辑规划",
+    description: "告诉 Agent 你想做什么视频，自动生成脚本结构和剪辑方案——镜头节奏、B-roll 插入、转场设计，一步到位。",
     color: "violet",
   },
   {
@@ -25,8 +25,8 @@ const features = [
         <path d="M2 12l10 5 10-5" />
       </svg>
     ),
-    title: "Skill 领域工作流",
-    description: "知识讲解、品牌营销、儿童故事……每种视频类型都有专业的制作协议，而不是通用 prompt。",
+    title: "领域化剪辑 Skill",
+    description: "测评、教程、Vlog、带货……每种视频类型都有专业的剪辑节奏和制作协议，不是通用模板。",
     color: "blue",
   },
   {
@@ -36,8 +36,8 @@ const features = [
         <path d="M22 4L12 14.01l-3-3" />
       </svg>
     ),
-    title: "多轮确认机制",
-    description: "Agent 主导推进，但你掌控决策。方向、大纲、脚本、分镜——每个关键节点都需要你的确认。",
+    title: "逐段确认，局部修改",
+    description: "某个镜头不满意？只改那一个。某段节奏太慢？只调那一段。不需要推倒重来，创作者掌控每个决策。",
     color: "emerald",
   },
   {
@@ -47,8 +47,8 @@ const features = [
         <path d="M12 6v6l4 2" />
       </svg>
     ),
-    title: "长视频一致性",
-    description: "角色外观、场景风格、故事连续性——跨镜头、跨场景自动保持连贯，不再前后矛盾。",
+    title: "长视频一致性引擎",
+    description: "角色形象、画面风格、配乐主题——跨镜头、跨场景自动保持连贯，让长视频不再前后矛盾。",
     color: "amber",
   },
   {
@@ -62,8 +62,8 @@ const features = [
         <path d="M18 6v12" />
       </svg>
     ),
-    title: "Studio 时间轴编辑器",
-    description: "专业级时间轴，拖拽片段、调整时长、修改字幕、替换音乐。局部重做，不强迫从头来。",
+    title: "专业时间轴剪辑台",
+    description: "拖拽片段、剪切拼接、变速调整、字幕配乐——像 Premiere 一样精细控制，但门槛低得多。",
     color: "rose",
   },
   {
@@ -74,8 +74,8 @@ const features = [
         <path d="M8 13h4" />
       </svg>
     ),
-    title: "自然语言控制",
-    description: "「第三个镜头更紧张一点」——直接用自然语言驱动编辑操作，不需要学复杂的软件。",
+    title: "自然语言剪辑",
+    description: "「第三个镜头节奏加快」「这里加个转场」——直接用自然语言控制剪辑，不需要学任何软件。",
     color: "indigo",
   },
 ]
@@ -108,7 +108,7 @@ export function Features() {
           transition={{ delay: 0.1 }}
           className="text-3xl lg:text-4xl font-bold text-slate-900"
         >
-          不只是生成，更是制作
+          不只是生成视频，更是剪辑视频
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -117,7 +117,7 @@ export function Features() {
           transition={{ delay: 0.2 }}
           className="mt-4 text-lg text-slate-500 max-w-xl mx-auto"
         >
-          每一项能力都为"可控的视频项目"而设计
+          为视频创作者打造的全流程 AI 助手
         </motion.p>
       </div>
 

@@ -37,7 +37,7 @@ export function Footer() {
               <span className="text-base font-semibold text-slate-900">Directra</span>
             </Link>
             <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
-              Agent 驱动的视频制作平台。把想法变成可控的视频项目。
+              Agent Video Clip — 为视频创作者打造的 AI 创作与剪辑平台。
             </p>
           </div>
 

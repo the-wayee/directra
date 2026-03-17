@@ -31,7 +31,7 @@ export function Hero() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-50 border border-violet-200/60 rounded-full">
             <span className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse" />
-            <span className="text-xs font-medium text-violet-700">Agent 驱动的新一代视频制作平台</span>
+            <span className="text-xs font-medium text-violet-700">Agent Video Clip — AI 驱动的视频创作与剪辑平台</span>
           </div>
         </motion.div>
 
@@ -43,9 +43,10 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-tight"
           >
-            把想法
+            不只是生成视频
+            <br />
             <span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-              变成视频项目
+              更是 AI 剪辑视频
             </span>
           </motion.h1>
 
@@ -55,9 +56,9 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mt-6 text-lg sm:text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto"
           >
-            不是一键生成，而是帮你组织、规划、制作、精修。
+            为视频创作者打造的 AI 助手——从脚本构思到剪辑成片，
             <br className="hidden sm:block" />
-            从模糊灵感到专业成片，Directra 全程陪你走完。
+            用对话驱动创作，用 Agent 完成剪辑。你的想法，我们帮你剪出来。
           </motion.p>
 
           {/* CTAs */}
@@ -118,7 +119,7 @@ export function Hero() {
                   <div className="w-5 h-5 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center">
                     <svg width="10" height="10" viewBox="0 0 16 16" fill="white"><path d="M3 3l10 5-10 5V3z" /></svg>
                   </div>
-                  <span className="text-[10px] font-medium text-slate-700">导演台 Agent</span>
+                  <span className="text-[10px] font-medium text-slate-700">Directra Agent</span>
                   <span className="ml-auto w-1.5 h-1.5 bg-emerald-400 rounded-full" />
                 </div>
                 {/* Messages */}
@@ -126,7 +127,7 @@ export function Hero() {
                   {/* User message */}
                   <div className="flex justify-end">
                     <div className="bg-violet-600 rounded-lg rounded-tr-sm px-2.5 py-1.5 max-w-[85%]">
-                      <p className="text-[9px] text-white leading-relaxed">帮我做一个 5 分钟的科普视频，讲量子纠缠</p>
+                      <p className="text-[9px] text-white leading-relaxed">帮我剪一个 3 分钟的科技测评视频，突出产品卖点</p>
                     </div>
                   </div>
                   {/* Agent message */}
@@ -135,7 +136,7 @@ export function Hero() {
                       <span className="text-[7px]">🤖</span>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 rounded-lg rounded-tl-sm px-2.5 py-1.5 max-w-[85%]">
-                      <p className="text-[9px] text-slate-600 leading-relaxed">好的！我来帮你规划这个科普视频。已识别为<span className="text-violet-600 font-medium">「知识讲解」</span>类型，建议时长 5 分钟，目标受众：科技爱好者。</p>
+                      <p className="text-[9px] text-slate-600 leading-relaxed">收到！已识别为<span className="text-violet-600 font-medium">「产品测评」</span>类型。我来帮你规划脚本结构和剪辑节奏，建议时长 3 分钟。</p>
                     </div>
                   </div>
                   {/* Confirmation card */}
@@ -144,12 +145,12 @@ export function Hero() {
                       <span className="text-[7px]">🤖</span>
                     </div>
                     <div className="bg-emerald-50 border border-emerald-200 rounded-lg rounded-tl-sm px-2.5 py-1.5 max-w-[90%]">
-                      <p className="text-[8px] font-medium text-emerald-700 mb-1">📋 大纲已生成</p>
+                      <p className="text-[8px] font-medium text-emerald-700 mb-1">📋 剪辑大纲已生成</p>
                       <div className="space-y-0.5 text-[8px] text-emerald-600">
-                        <p>1. 开场：日常现象引入悬念</p>
-                        <p>2. 核心：量子纠缠原理拆解</p>
-                        <p>3. 案例：实验验证与应用场景</p>
-                        <p>4. 总结：未来展望与行动引导</p>
+                        <p>1. 开场：3 秒快剪 + 产品亮相 hook</p>
+                        <p>2. 核心：功能演示 + 画面特写 B-roll</p>
+                        <p>3. 对比：竞品对比 + 数据可视化</p>
+                        <p>4. 结尾：总结推荐 + CTA 引导</p>
                       </div>
                       <div className="flex gap-1.5 mt-2">
                         <div className="px-2 py-0.5 bg-emerald-600 text-white rounded text-[8px] font-medium">确认</div>
@@ -163,7 +164,7 @@ export function Hero() {
                       <span className="text-[7px]">🤖</span>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 rounded-lg rounded-tl-sm px-2.5 py-1.5 max-w-[85%]">
-                      <p className="text-[9px] text-slate-600 leading-relaxed">大纲已确认，正在生成分镜脚本<span className="inline-block w-1 h-3 bg-violet-400 animate-pulse ml-0.5 rounded-sm" /></p>
+                      <p className="text-[9px] text-slate-600 leading-relaxed">大纲已确认，正在生成分镜和剪辑方案<span className="inline-block w-1 h-3 bg-violet-400 animate-pulse ml-0.5 rounded-sm" /></p>
                     </div>
                   </div>
                 </div>
@@ -182,10 +183,10 @@ export function Hero() {
               <div className="flex-1 flex flex-col">
                 {/* Tabs */}
                 <div className="px-3 py-2 border-b border-slate-100 flex items-center gap-1">
-                  <div className="px-2 py-0.5 text-[9px] text-slate-400 rounded">Brief</div>
-                  <div className="px-2 py-0.5 text-[9px] bg-violet-100 text-violet-700 rounded font-medium">大纲</div>
                   <div className="px-2 py-0.5 text-[9px] text-slate-400 rounded">脚本</div>
+                  <div className="px-2 py-0.5 text-[9px] bg-violet-100 text-violet-700 rounded font-medium">剪辑方案</div>
                   <div className="px-2 py-0.5 text-[9px] text-slate-400 rounded">分镜</div>
+                  <div className="px-2 py-0.5 text-[9px] text-slate-400 rounded">素材</div>
                   <div className="ml-auto px-2 py-0.5 text-[8px] bg-violet-600 text-white rounded font-medium">进入 Studio</div>
                 </div>
                 {/* Outline content */}
@@ -195,24 +196,24 @@ export function Hero() {
                     <div className="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden">
                       <div className="h-full w-2/5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full" />
                     </div>
-                    <span className="text-[8px] text-slate-400">大纲确认中</span>
+                    <span className="text-[8px] text-slate-400">剪辑方案确认中</span>
                   </div>
 
                   {/* Act 1 */}
                   <div className="bg-white rounded-lg border border-slate-200 p-3">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-5 h-5 rounded bg-violet-100 flex items-center justify-center text-[8px] font-bold text-violet-600">1</div>
-                      <span className="text-[10px] font-semibold text-slate-800">第一幕：开场引入</span>
-                      <span className="ml-auto text-[8px] text-slate-400">0:00 - 0:45</span>
+                      <span className="text-[10px] font-semibold text-slate-800">开场 Hook</span>
+                      <span className="ml-auto text-[8px] text-slate-400">0:00 - 0:08</span>
                     </div>
                     <div className="pl-7 space-y-1">
                       <div className="flex items-center gap-1.5">
                         <div className="w-1 h-1 rounded-full bg-slate-300" />
-                        <span className="text-[9px] text-slate-500">场景 1：日常对话场景，引出量子纠缠话题</span>
+                        <span className="text-[9px] text-slate-500">快剪：3 秒产品多角度特写</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="w-1 h-1 rounded-full bg-slate-300" />
-                        <span className="text-[9px] text-slate-500">场景 2：提出核心问题，制造悬念</span>
+                        <span className="text-[9px] text-slate-500">口播：一句话引出核心卖点</span>
                       </div>
                     </div>
                   </div>
@@ -221,21 +222,21 @@ export function Hero() {
                   <div className="bg-white rounded-lg border border-slate-200 p-3">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-5 h-5 rounded bg-blue-100 flex items-center justify-center text-[8px] font-bold text-blue-600">2</div>
-                      <span className="text-[10px] font-semibold text-slate-800">第二幕：核心讲解</span>
-                      <span className="ml-auto text-[8px] text-slate-400">0:45 - 3:00</span>
+                      <span className="text-[10px] font-semibold text-slate-800">功能演示</span>
+                      <span className="ml-auto text-[8px] text-slate-400">0:08 - 1:45</span>
                     </div>
                     <div className="pl-7 space-y-1">
                       <div className="flex items-center gap-1.5">
                         <div className="w-1 h-1 rounded-full bg-slate-300" />
-                        <span className="text-[9px] text-slate-500">场景 1：量子叠加态动画演示</span>
+                        <span className="text-[9px] text-slate-500">口播 + B-roll：逐一展示核心功能</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="w-1 h-1 rounded-full bg-slate-300" />
-                        <span className="text-[9px] text-slate-500">场景 2：纠缠态概念可视化</span>
+                        <span className="text-[9px] text-slate-500">画中画：操作录屏 + 真人出镜</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="w-1 h-1 rounded-full bg-slate-300" />
-                        <span className="text-[9px] text-slate-500">场景 3：EPR 悖论图解</span>
+                        <span className="text-[9px] text-slate-500">数据卡片：关键参数对比可视化</span>
                       </div>
                     </div>
                   </div>
@@ -244,13 +245,13 @@ export function Hero() {
                   <div className="bg-white rounded-lg border border-emerald-200 p-3">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-5 h-5 rounded bg-emerald-100 flex items-center justify-center text-[8px] font-bold text-emerald-600">3</div>
-                      <span className="text-[10px] font-semibold text-slate-800">第三幕：实验验证</span>
+                      <span className="text-[10px] font-semibold text-slate-800">总结 + CTA</span>
                       <span className="ml-auto text-[8px] text-emerald-500 font-medium">生成中...</span>
                     </div>
                     <div className="pl-7 space-y-1">
                       <div className="flex items-center gap-1.5">
                         <div className="w-1 h-1 rounded-full bg-slate-300" />
-                        <span className="text-[9px] text-slate-400">场景 1：贝尔实验简化演示</span>
+                        <span className="text-[9px] text-slate-400">快剪回顾 + 购买引导 + 片尾卡片</span>
                       </div>
                       <div className="h-2 w-24 bg-slate-100 rounded animate-pulse ml-2.5" />
                     </div>
@@ -271,9 +272,9 @@ export function Hero() {
                 <div className="w-6 h-6 rounded-md bg-violet-100 flex items-center justify-center">
                   <span className="text-xs">🎯</span>
                 </div>
-                <span className="text-xs font-medium text-slate-700">意图解析完成</span>
+                <span className="text-xs font-medium text-slate-700">剪辑方案就绪</span>
               </div>
-              <div className="text-[10px] text-slate-400">类型: 知识讲解 · 5分钟</div>
+              <div className="text-[10px] text-slate-400">类型: 产品测评 · 3分钟</div>
             </div>
           </motion.div>
 
@@ -287,7 +288,7 @@ export function Hero() {
                 <div className="w-6 h-6 rounded-md bg-emerald-100 flex items-center justify-center">
                   <span className="text-xs">✅</span>
                 </div>
-                <span className="text-xs font-medium text-slate-700">脚本已确认</span>
+                <span className="text-xs font-medium text-slate-700">时间轴已生成</span>
               </div>
               <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full w-3/4 bg-emerald-400 rounded-full" />

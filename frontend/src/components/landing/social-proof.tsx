@@ -4,10 +4,10 @@ import { motion, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
 
 const stats = [
-  { value: 1200, suffix: "+", label: "创作者", icon: "👤" },
-  { value: 5, suffix: "万+", label: "视频项目", icon: "🎬" },
-  { value: 6, suffix: "大", label: "领域 Skill", icon: "🧩" },
-  { value: 99.9, suffix: "%", label: "一致性评分", icon: "✨" },
+  { value: 1200, suffix: "+", label: "视频创作者", icon: "🎬" },
+  { value: 5, suffix: "万+", label: "视频已剪辑", icon: "✂️" },
+  { value: 80, suffix: "%", label: "剪辑效率提升", icon: "⚡" },
+  { value: 6, suffix: "大", label: "创作领域", icon: "🧩" },
 ]
 
 function CountUp({ target, suffix, duration = 2 }: { target: number; suffix: string; duration?: number }) {

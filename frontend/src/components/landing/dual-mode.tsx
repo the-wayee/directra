@@ -8,13 +8,13 @@ const modes = [
   {
     id: "agent",
     label: "Agent 创作模式",
-    subtitle: "从 0 到 1，对话驱动",
-    description: "通过自然语言对话，把模糊的想法逐步组织成结构化的视频项目。Agent 帮你规划流程，你只需在关键节点做决策。",
+    subtitle: "从 0 到 1，对话驱动创作与剪辑",
+    description: "告诉 Agent 你的视频需求，AI 自动规划脚本结构、镜头语言和剪辑节奏。你只需要在关键节点确认或修改。",
     points: [
-      "一句话描述，自动解析项目意图",
-      "智能匹配最适合的领域 Skill",
-      "脚本、分镜逐段生成和确认",
-      "随时修改，不满意就重来某一段",
+      "一句话描述需求，AI 理解创作意图",
+      "自动匹配领域 Skill（测评/教程/Vlog…）",
+      "脚本、分镜、剪辑方案逐段确认",
+      "某段不满意？只改那一段，不用全部重来",
     ],
     mockup: (
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -57,14 +57,14 @@ const modes = [
   },
   {
     id: "studio",
-    label: "Studio 编辑模式",
-    subtitle: "精修与导出",
-    description: "初稿完成后，进入专业级时间轴编辑器。像剪辑师一样调整每个细节，也可以用自然语言驱动编辑。",
+    label: "Studio 剪辑模式",
+    subtitle: "专业剪辑台，精细控制",
+    description: "AI 生成初稿后，进入专业时间轴剪辑台。像 Premiere 一样精细调整每个镜头，也可以用自然语言控制剪辑。",
     points: [
-      "时间轴拖拽编辑，所见即所得",
-      "局部替换任意镜头或片段",
-      "字幕、音乐、转场精确控制",
-      "多版本管理，一键导出",
+      "时间轴拖拽剪辑，所见即所得",
+      "剪切、变速、局部替换任意片段",
+      "字幕、配乐、转场精确控制",
+      "多版本管理，一键导出成片",
     ],
     mockup: (
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -130,7 +130,7 @@ export function DualMode() {
           transition={{ delay: 0.1 }}
           className="text-3xl lg:text-4xl font-bold text-slate-900"
         >
-          创作与编辑，无缝切换
+          AI 创作 + 专业剪辑，无缝切换
         </motion.h2>
       </div>
 

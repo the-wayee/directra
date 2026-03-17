@@ -6,8 +6,8 @@ import { SectionWrapper } from "./shared/section-wrapper"
 const steps = [
   {
     number: "01",
-    title: "说出你的想法",
-    description: "用一句自然语言描述你想做的视频。系统会自动解析你的项目意图——类型、受众、时长、风格，全部帮你理清楚。",
+    title: "描述你的视频需求",
+    description: "告诉 Agent 你想做什么——测评、教程、Vlog、带货……一句话就够，AI 自动理解你的创作意图和受众。",
     color: "violet",
     icon: (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="rgb(124 58 237)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -18,8 +18,8 @@ const steps = [
   },
   {
     number: "02",
-    title: "AI 帮你规划",
-    description: "导演台 Agent 自动匹配最适合的领域 Skill，规划完整制作流程。你不需要懂视频制作，系统帮你安排一切。",
+    title: "AI 生成脚本与剪辑方案",
+    description: "Agent 自动规划脚本结构、镜头语言和剪辑节奏。口播段落、B-roll 插入点、转场方式，全部帮你安排好。",
     color: "blue",
     icon: (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="rgb(59 130 246)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -30,8 +30,8 @@ const steps = [
   },
   {
     number: "03",
-    title: "逐步确认打磨",
-    description: "脚本、大纲、分镜——每个关键节点都会停下来让你确认。不满意就改，满意了再继续。你掌控每个决策。",
+    title: "逐段确认，随时修改",
+    description: "脚本、分镜、剪辑方案——每个环节都可以确认或修改。某段不满意？只改那一段，不用全部重来。",
     color: "emerald",
     icon: (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="rgb(16 185 129)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -42,8 +42,8 @@ const steps = [
   },
   {
     number: "04",
-    title: "Studio 精修导出",
-    description: "进入时间轴编辑器，像专业剪辑师一样调整每个细节。局部替换、字幕调整、音乐更换，然后一键导出。",
+    title: "时间轴精修，一键导出",
+    description: "进入 Studio 编辑器，在时间轴上精细调整——剪切、变速、转场、字幕、配乐，像专业剪辑师一样输出成片。",
     color: "amber",
     icon: (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="rgb(245 158 11)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -89,7 +89,7 @@ export function HowItWorks() {
           transition={{ delay: 0.2 }}
           className="mt-4 text-lg text-slate-500 max-w-xl mx-auto"
         >
-          Agent 主导流程推进，你只需要在关键节点做决策
+          AI Agent 帮你规划和剪辑，你只需在关键节点做决策
         </motion.p>
       </div>
 

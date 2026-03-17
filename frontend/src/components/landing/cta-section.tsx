@@ -23,10 +23,10 @@ export function CTASection() {
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 
           <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4 relative">
-            准备好把想法变成视频了吗？
+            让 AI 帮你剪视频
           </h2>
           <p className="text-violet-200 text-base lg:text-lg mb-8 max-w-lg mx-auto relative">
-            免费开始，不需要信用卡。用一句话启动你的第一个视频项目。
+            免费开始，不需要信用卡。告诉 Agent 你想做什么视频，剩下的交给 AI。
           </p>
           <Link
             href="/home"
