@@ -36,7 +36,7 @@ const mockReplies = [
 你觉得节奏怎么样？哪个部分需要调整？`,
 ]
 
-export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ConversationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [input, setInput] = useState("")
@@ -49,7 +49,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const setActiveId = useProjectsStore((s) => s.setActiveId)
   const addMessage = useProjectsStore((s) => s.addMessage)
   const addMessageToDb = useProjectsStore((s) => s.addMessageToDb)
-  const loadProjectMessages = useProjectsStore((s) => s.loadProjectMessages)
+  const loadConversationMessages = useProjectsStore((s) => s.loadConversationMessages)
   const loaded = useProjectsStore((s) => s.loaded)
   const loadProjects = useProjectsStore((s) => s.loadProjects)
 
@@ -58,12 +58,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     if (!loaded) loadProjects()
   }, [loaded, loadProjects])
 
-  // Load messages for this project from DB
+  // Load messages for this conversation from DB
   useEffect(() => {
     if (loaded && conversation && conversation.messages.length === 0) {
-      loadProjectMessages(id)
+      loadConversationMessages(id)
     }
-  }, [id, loaded, conversation, loadProjectMessages])
+  }, [id, loaded, conversation, loadConversationMessages])
 
   // Set active conversation
   useEffect(() => {
@@ -93,16 +93,13 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     const last = msgs[msgs.length - 1]
     if (last.role !== "user") return
 
-    // Simulate typing delay
     setIsTyping(true)
     const timer = setTimeout(async () => {
       const content = mockReplies[replyIndex.current % mockReplies.length]
       replyIndex.current++
       try {
-        // Persist mock reply to DB
         await addMessageToDb(id, { role: "assistant", type: "text", content })
       } catch {
-        // Fallback: add locally only
         addMessage(id, {
           id: `msg-${Date.now()}`,
           role: "assistant",
@@ -125,7 +122,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     try {
       await addMessageToDb(id, { role: "user", type: "text", content })
     } catch {
-      // Fallback: local only
       addMessage(id, { id: `msg-${Date.now()}`, role: "user", type: "text", content })
     }
   }
@@ -141,12 +137,9 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="flex h-screen bg-slate-50">
-      {/* Sidebar */}
       <AppSidebar open={sidebarOpen} onToggle={() => setSidebarOpen(false)} />
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
         <header className="flex items-center h-14 px-4 border-b border-slate-100 shrink-0 bg-white/80 backdrop-blur-sm">
           {!sidebarOpen && <SidebarToggle onClick={() => setSidebarOpen(true)} />}
           <h1 className="text-sm font-medium text-slate-700 truncate ml-1">
@@ -155,14 +148,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           <div className="flex-1" />
         </header>
 
-        {/* Messages area */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
             {messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
             ))}
 
-            {/* Typing indicator */}
             {isTyping && (
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
@@ -171,21 +162,9 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                   </svg>
                 </div>
                 <div className="flex items-center gap-1 py-3">
-                  <motion.span
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
-                    className="w-1.5 h-1.5 bg-slate-400 rounded-full"
-                  />
-                  <motion.span
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
-                    className="w-1.5 h-1.5 bg-slate-400 rounded-full"
-                  />
-                  <motion.span
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
-                    className="w-1.5 h-1.5 bg-slate-400 rounded-full"
-                  />
+                  <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0 }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                  <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                  <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
                 </div>
               </div>
             )}
@@ -194,7 +173,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
 
-        {/* Input area */}
         <div className="border-t border-slate-100 bg-white/80 backdrop-blur-sm p-4">
           <div className="max-w-3xl mx-auto">
             <div className="relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 focus-within:shadow-md focus-within:border-violet-300 focus-within:ring-2 focus-within:ring-violet-100">
@@ -278,7 +256,6 @@ function MarkdownText({ text }: { text: string }) {
     <div className="space-y-1.5">
       {lines.map((line, i) => {
         if (!line.trim()) return <div key={i} className="h-2" />
-        // Bold
         const parts = line.split(/(\*\*[^*]+\*\*)/g)
         return (
           <p key={i}>

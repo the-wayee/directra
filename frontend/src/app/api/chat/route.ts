@@ -11,21 +11,15 @@ import { prisma } from "@/lib/db"
  * 当前阶段：返回 mock 流式回复（前端优先策略）。
  * 后续阶段：转发到 Python FastAPI 的 /api/chat SSE 接口，中转流式数据。
  *
- * 通信协议设计：
- * ┌─────────┐    POST /api/chat     ┌──────────┐    POST /agent/chat    ┌──────────┐
- * │ 前端    │ ──────────────────────▷│ Node BFF │ ──────────────────────▷│ Python   │
- * │ (SSE)   │ ◁── SSE stream ───── │ (中转)   │ ◁── SSE stream ───── │ (FastAPI)│
- * └─────────┘                       └──────────┘                       └──────────┘
- *
  * SSE 数据格式（前端 ↔ Node ↔ Python 统一）：
  *   event: token        data: {"content": "..."}         // 流式文字 token
  *   event: tool_call    data: {"name": "...", ...}       // Agent tool_use
- *   event: confirmation data: {"id": "...", "desc": ""} // 确认节点
+ *   event: confirmation data: {"id": "...", "desc": ""}  // 确认节点
  *   event: done         data: {"messageId": "..."}       // 完成
  *   event: error        data: {"message": "..."}         // 错误
  *
  * Request body:
- *   { projectId: string, message: string }
+ *   { conversationId: string, message: string }
  */
 export async function POST(req: NextRequest) {
   // Auth check
@@ -34,25 +28,25 @@ export async function POST(req: NextRequest) {
     return new Response("未登录", { status: 401 })
   }
 
-  const { projectId, message } = await req.json()
+  const { conversationId, message } = await req.json()
 
-  if (!projectId || !message) {
+  if (!conversationId || !message) {
     return new Response("缺少参数", { status: 400 })
   }
 
-  // Verify project ownership
-  const project = await prisma.project.findFirst({
-    where: { id: projectId, userId: session.user.id },
-    select: { id: true },
+  // Verify conversation ownership
+  const conv = await prisma.conversation.findFirst({
+    where: { id: conversationId, project: { userId: session.user.id } },
+    select: { id: true, projectId: true },
   })
-  if (!project) {
-    return new Response("项目不存在", { status: 404 })
+  if (!conv) {
+    return new Response("对话不存在", { status: 404 })
   }
 
   // Save user message to DB
   await prisma.message.create({
     data: {
-      projectId,
+      conversationId,
       role: "user",
       type: "text",
       content: message,
@@ -60,45 +54,39 @@ export async function POST(req: NextRequest) {
   })
 
   // ─── Mock SSE stream（后续替换为 Python 转发）─────────────────────────────
-  // TODO: Phase 3 — 转发到 Python FastAPI: POST http://localhost:8000/agent/chat
-  // const pythonRes = await fetch(`${PYTHON_URL}/agent/chat`, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ projectId, message, userId: session.user.id }),
-  // })
-  // return new Response(pythonRes.body, { headers: { "Content-Type": "text/event-stream", ... } })
-
   const mockReply = generateMockReply(message)
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream({
     async start(controller) {
-      // Simulate streaming token by token
       const words = mockReply.split("")
       for (let i = 0; i < words.length; i++) {
         const chunk = `event: token\ndata: ${JSON.stringify({ content: words[i] })}\n\n`
         controller.enqueue(encoder.encode(chunk))
-        // Simulate typing speed
         await new Promise((r) => setTimeout(r, 15 + Math.random() * 25))
       }
 
       // Save assistant message to DB
       const saved = await prisma.message.create({
         data: {
-          projectId,
+          conversationId,
           role: "assistant",
           type: "text",
           content: mockReply,
         },
       })
 
-      // Touch project updatedAt
+      // Touch conversation and project updatedAt
+      const now = new Date()
+      await prisma.conversation.update({
+        where: { id: conversationId },
+        data: { updatedAt: now },
+      })
       await prisma.project.update({
-        where: { id: projectId },
-        data: { updatedAt: new Date() },
+        where: { id: conv.projectId },
+        data: { updatedAt: now },
       })
 
-      // Send done event
       const done = `event: done\ndata: ${JSON.stringify({ messageId: saved.id })}\n\n`
       controller.enqueue(encoder.encode(done))
       controller.close()

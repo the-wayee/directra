@@ -1,18 +1,20 @@
 import { create } from "zustand"
 import type { Message } from "@/lib/types"
 import {
-  createProject as createProjectAction,
+  createConversation as createConversationAction,
   listProjects as listProjectsAction,
-  getProject as getProjectAction,
+  getConversation as getConversationAction,
+  updateConversationTitle as updateConversationTitleAction,
   updateProjectTitle as updateProjectTitleAction,
   addMessage as addMessageAction,
-  deleteProject as deleteProjectAction,
+  deleteConversation as deleteConversationAction,
 } from "@/lib/actions/project"
 
-// ─── Conversation (project) ─────────────────────────────────────────────────
+// ─── Conversation ───────────────────────────────────────────────────────────
 
 export interface Conversation {
   id: string
+  projectId: string
   title: string
   titleGenerating: boolean
   messages: Message[]
@@ -22,18 +24,18 @@ export interface Conversation {
 
 interface ProjectsState {
   conversations: Conversation[]
-  activeId: string | null
+  activeId: string | null // active conversation ID
   loaded: boolean
 
   // Actions
   loadProjects: () => Promise<void>
-  loadProjectMessages: (projectId: string) => Promise<void>
+  loadConversationMessages: (conversationId: string) => Promise<void>
   createConversation: (firstMessage: string) => Promise<string>
   setActiveId: (id: string | null) => void
-  addMessage: (projectId: string, message: Message) => void
-  addMessageToDb: (projectId: string, message: Omit<Message, "id">) => Promise<Message>
-  updateTitle: (projectId: string, title: string) => void
-  removeProject: (projectId: string) => Promise<void>
+  addMessage: (conversationId: string, message: Message) => void
+  addMessageToDb: (conversationId: string, message: Omit<Message, "id">) => Promise<Message>
+  updateTitle: (conversationId: string, title: string) => void
+  removeConversation: (conversationId: string) => Promise<void>
 }
 
 // ─── AI title generation ────────────────────────────────────────────────────
@@ -65,32 +67,34 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   loadProjects: async () => {
     try {
       const projects = await listProjectsAction()
-      set({
-        conversations: projects.map((p) => ({
-          id: p.id,
+      // Flatten: each project's latest conversation becomes a sidebar entry
+      // For now, 1 project = 1 conversation (auto-created)
+      const convs: Conversation[] = projects
+        .filter((p) => p.latestConversationId)
+        .map((p) => ({
+          id: p.latestConversationId!,
+          projectId: p.id,
           title: p.title,
           titleGenerating: false,
-          messages: [], // Messages loaded lazily per project
+          messages: [], // Loaded lazily
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
-        })),
-        loaded: true,
-      })
+        }))
+      set({ conversations: convs, loaded: true })
     } catch {
-      // Auth not ready or error — keep empty
       set({ loaded: true })
     }
   },
 
-  loadProjectMessages: async (projectId: string) => {
+  loadConversationMessages: async (conversationId: string) => {
     try {
-      const project = await getProjectAction(projectId)
-      if (!project) return
+      const conv = await getConversationAction(conversationId)
+      if (!conv) return
 
       set((state) => ({
         conversations: state.conversations.map((c) =>
-          c.id === projectId
-            ? { ...c, messages: project.messages as Message[], title: project.title }
+          c.id === conversationId
+            ? { ...c, messages: conv.messages as Message[], title: conv.title }
             : c
         ),
       }))
@@ -113,6 +117,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
 
     const conv: Conversation = {
       id: tempId,
+      projectId: "",
       title: "新对话",
       titleGenerating: true,
       messages: [userMsg],
@@ -127,7 +132,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
 
     // Create in DB
     try {
-      const result = await createProjectAction(firstMessage)
+      const result = await createConversationAction(firstMessage)
 
       // Replace temp conversation with real one
       set((state) => ({
@@ -135,33 +140,35 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
           c.id === tempId
             ? {
                 ...c,
-                id: result.id,
+                id: result.conversationId,
+                projectId: result.projectId,
                 messages: result.messages as Message[],
                 createdAt: result.createdAt,
                 updatedAt: result.updatedAt,
               }
             : c
         ),
-        activeId: state.activeId === tempId ? result.id : state.activeId,
+        activeId: state.activeId === tempId ? result.conversationId : state.activeId,
       }))
 
-      // Generate title async
+      // Generate title async — update both conversation and project title
       generateTitleWithAI(firstMessage).then(async (title) => {
         try {
-          await updateProjectTitleAction(result.id, title)
+          await updateConversationTitleAction(result.conversationId, title)
+          await updateProjectTitleAction(result.projectId, title)
         } catch {
           // ignore
         }
         set((state) => ({
           conversations: state.conversations.map((c) =>
-            c.id === result.id ? { ...c, title, titleGenerating: false } : c
+            c.id === result.conversationId ? { ...c, title, titleGenerating: false } : c
           ),
         }))
       })
 
-      return result.id
+      return result.conversationId
     } catch (err) {
-      // Remove temp conversation on failure
+      console.error("createConversation failed:", err)
       set((state) => ({
         conversations: state.conversations.filter((c) => c.id !== tempId),
         activeId: null,
@@ -173,23 +180,23 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   setActiveId: (id) => set({ activeId: id }),
 
   // Local-only add (for optimistic updates)
-  addMessage: (projectId, message) =>
+  addMessage: (conversationId, message) =>
     set((state) => ({
       conversations: state.conversations.map((c) =>
-        c.id === projectId
+        c.id === conversationId
           ? { ...c, messages: [...c.messages, message], updatedAt: new Date().toISOString() }
           : c
       ),
     })),
 
   // Add message and persist to DB
-  addMessageToDb: async (projectId, message) => {
-    const saved = await addMessageAction(projectId, message)
+  addMessageToDb: async (conversationId, message) => {
+    const saved = await addMessageAction(conversationId, message)
     const msg = saved as Message
 
     set((state) => ({
       conversations: state.conversations.map((c) =>
-        c.id === projectId
+        c.id === conversationId
           ? { ...c, messages: [...c.messages, msg], updatedAt: new Date().toISOString() }
           : c
       ),
@@ -198,18 +205,18 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     return msg
   },
 
-  updateTitle: (projectId, title) =>
+  updateTitle: (conversationId, title) =>
     set((state) => ({
       conversations: state.conversations.map((c) =>
-        c.id === projectId ? { ...c, title } : c
+        c.id === conversationId ? { ...c, title } : c
       ),
     })),
 
-  removeProject: async (projectId: string) => {
-    await deleteProjectAction(projectId)
+  removeConversation: async (conversationId: string) => {
+    await deleteConversationAction(conversationId)
     set((state) => ({
-      conversations: state.conversations.filter((c) => c.id !== projectId),
-      activeId: state.activeId === projectId ? null : state.activeId,
+      conversations: state.conversations.filter((c) => c.id !== conversationId),
+      activeId: state.activeId === conversationId ? null : state.activeId,
     }))
   },
 }))

@@ -14,6 +14,35 @@
 
 ## 当前阶段：Phase 3 — Python FastAPI 执行层搭建
 
+### 2.9 — 数据模型重构：Project → Conversation → Message ✅
+
+- [x] 修复 Prisma Client 缓存 bug（Turbopack 缓存旧 client 导致 `prisma.project` 为 undefined）
+  - 根因：`prisma generate` 后 `.next` 缓存未清理，Turbopack 加载了仅含 Auth 模型的旧 client
+  - 修复：清理 `.next` 缓存后重启 dev server
+- [x] 新增 Conversation 表（三层数据模型）
+  - Project（工作区/主题）→ Conversation[]（每个对话产出一个视频）→ Message[]（聊天消息）
+  - `phase` 字段从 Project 移至 Conversation（每个对话独立推进阶段）
+  - Project 简化为工作区角色（title/status/skillId）
+- [x] Prisma migration: `add_conversation_layer`
+- [x] Server Actions 全面重构（`lib/actions/project.ts`）
+  - 新增：`createConversation` / `listConversations` / `getConversation` / `updateConversationTitle` / `deleteConversation`
+  - `addMessage` 改为基于 `conversationId`（非 `projectId`）
+  - 删除对话时，若项目无剩余对话则自动删除项目
+  - `listProjects` 返回每个项目的最新对话 ID
+- [x] Zustand Store 适配新数据模型
+  - `Conversation` 接口新增 `projectId` 字段
+  - `loadConversationMessages` 替代 `loadProjectMessages`
+  - `removeConversation` 替代 `removeProject`
+  - 标题同时更新到 Conversation 和 Project
+- [x] 路由迁移：`/projects/[id]` → `/c/[id]`（对话页）
+  - 新建 `(dashboard)/c/[id]/page.tsx`
+  - 侧边栏链接更新为 `/c/{conversationId}`
+  - middleware 新增 `/c` 路由保护
+- [x] SSE `/api/chat` 适配：`projectId` → `conversationId`
+- [x] TypeScript 零错误编译通过
+
+---
+
 ### 2.7 — Landing Page 品牌重塑（Agent Video Clip）✅
 
 - [x] 全站文案重写：突出「不只是生成视频，更是 AI 剪辑视频」核心定位
@@ -157,33 +186,34 @@
 
 ---
 
-## Phase 1 — 数据库 & Prisma 接入 ✅（部分）
+## Phase 1 — 数据库 & Prisma 接入 ✅
 
 - [x] Prisma 7 初始化（prisma.config.ts + schema.prisma）
 - [x] 本地 PostgreSQL（Docker）
 - [x] Better Auth 所需表（User/Session/Account/Verification）
 - [x] 第一次 prisma migrate dev
 - [x] 生成 Prisma Client，封装 lib/db.ts（PrismaPg adapter）
-- [ ] 完整业务 schema（Project/Skill/Brief/Outline/Script 等）—— 后续阶段补充
+- [x] 业务 schema：Project / Conversation / Message / CreditBalance / CreditLog
 
 ---
 
 ## Phase 2.8 — Node BFF 数据持久化（Phase 3 前置）✅
 
-- [x] Prisma Schema 扩展：Project / Message / CreditBalance / CreditLog
-- [x] Project CRUD Server Actions（`lib/actions/project.ts`）
-  - `createProject` / `listProjects` / `getProject` / `updateProjectTitle` / `deleteProject`
-  - `addMessage`（含所有权校验）
+- [x] Prisma Schema 扩展：Project / Conversation / Message / CreditBalance / CreditLog
+- [x] Server Actions CRUD（`lib/actions/project.ts`）
+  - Project: `listProjects` / `updateProjectTitle` / `deleteProject`
+  - Conversation: `createConversation` / `listConversations` / `getConversation` / `updateConversationTitle` / `deleteConversation`
+  - Message: `addMessage`（含所有权校验）
   - 所有操作自动验证当前用户 session
 - [x] Zustand Store 重构：纯内存 mock → 数据库持久化
-  - `loadProjects` / `loadProjectMessages`（懒加载消息）
+  - `loadProjects` / `loadConversationMessages`（懒加载消息）
   - `createConversation` 乐观更新 + DB 持久化 + AI 标题生成
   - `addMessageToDb` 持久化消息
-  - `removeProject` 删除对话（含侧边栏删除按钮）
+  - `removeConversation` 删除对话（含侧边栏删除按钮）
 - [x] SSE 流式中转接口 `/api/chat`
   - 完整通信协议设计（event: token/tool_call/confirmation/done/error）
   - 当前 mock 流式回复（逐字输出），后续替换为 Python 转发
-  - Auth 校验 + 项目所有权验证
+  - Auth 校验 + 对话所有权验证
   - 消息自动持久化到 DB
 - [x] 积分系统 schema 占位（CreditBalance + CreditLog）
 - [ ] 文件上传协调（S3 presigned URL 签发接口）—— 推迟到 Phase 5
@@ -280,4 +310,12 @@
 - Zustand Store 从纯内存 mock 重构为 DB 持久化（乐观更新 + 懒加载）
 - `/api/chat` SSE 中转接口（mock 流式回复，通信协议设计完成）
 - 侧边栏新增删除对话功能
+- 下一步：Phase 3 — Python FastAPI 执行层
+
+**2026-03-18** Phase 2.9 数据模型重构完成。关键决策：
+- 三层数据模型：Project（工作区）→ Conversation（对话/视频）→ Message（消息）
+- 一个项目可包含多个对话，为系列创作、跨视频上下文共享、未来团队协作做准备
+- 路由从 `/projects/[id]` 迁移到 `/c/[id]`（对话为核心交互单元）
+- `phase` 字段从 Project 移至 Conversation（每个对话独立推进制作阶段）
+- 修复 Prisma Turbopack 缓存 bug：`prisma generate` 后必须清理 `.next` 缓存
 - 下一步：Phase 3 — Python FastAPI 执行层

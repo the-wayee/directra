@@ -16,7 +16,7 @@ export function AppSidebar({ open, onToggle }: AppSidebarProps) {
   const router = useRouter()
   const { data: session } = useSession()
   const user = session?.user
-  const { conversations, activeId, removeProject } = useProjectsStore()
+  const { conversations, activeId, removeConversation } = useProjectsStore()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -115,7 +115,7 @@ export function AppSidebar({ open, onToggle }: AppSidebarProps) {
                   {group.items.map((conv) => (
                     <div key={conv.id} className="relative group/item">
                       <Link
-                        href={`/projects/${conv.id}`}
+                        href={`/c/${conv.id}`}
                         className={`flex items-center gap-2 px-2.5 py-2 text-sm rounded-lg transition-colors ${
                           activeId === conv.id
                             ? "bg-slate-100 text-slate-900 font-medium"
@@ -133,7 +133,7 @@ export function AppSidebar({ open, onToggle }: AppSidebarProps) {
                         onClick={async (e) => {
                           e.preventDefault()
                           e.stopPropagation()
-                          await removeProject(conv.id)
+                          await removeConversation(conv.id)
                           if (activeId === conv.id) router.push("/home")
                         }}
                         className="absolute right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/item:opacity-100 cursor-pointer"

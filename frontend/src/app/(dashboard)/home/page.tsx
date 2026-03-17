@@ -42,6 +42,7 @@ export default function HomePage() {
   const router = useRouter()
   const [input, setInput] = useState("")
   const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const createConversation = useProjectsStore((s) => s.createConversation)
@@ -66,9 +67,11 @@ export default function HomePage() {
     if (!input.trim() || sending) return
     setSending(true)
     try {
-      const projectId = await createConversation(input.trim())
-      router.push(`/projects/${projectId}`)
-    } catch {
+      const conversationId = await createConversation(input.trim())
+      router.push(`/c/${conversationId}`)
+    } catch (err) {
+      console.error("创建对话失败:", err)
+      setError(err instanceof Error ? err.message : String(err))
       setSending(false)
     }
   }
@@ -172,6 +175,14 @@ export default function HomePage() {
                 </button>
               </div>
             </motion.div>
+
+            {/* Error display */}
+            {error && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">
+                <strong>错误：</strong>{error}
+                <button onClick={() => setError(null)} className="ml-2 underline">关闭</button>
+              </div>
+            )}
 
             {/* Suggestions */}
             <motion.div
