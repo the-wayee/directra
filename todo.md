@@ -12,7 +12,7 @@
 
 ---
 
-## 当前阶段：Phase 2.7 — Landing Page 品牌重塑 + Node BFF 职责梳理
+## 当前阶段：Phase 3 — Python FastAPI 执行层搭建
 
 ### 2.7 — Landing Page 品牌重塑（Agent Video Clip）✅
 
@@ -168,14 +168,25 @@
 
 ---
 
-## Phase 2.8 — Node BFF 数据持久化（Phase 3 前置）
+## Phase 2.8 — Node BFF 数据持久化（Phase 3 前置）✅
 
-- [ ] 完整业务 Prisma Schema（Project / Conversation / Message / Skill 等表）
-- [ ] Project CRUD API（Server Actions 或 API Routes）
-- [ ] Conversation / Message 持久化（当前 Zustand 纯内存 → PostgreSQL）
-- [ ] SSE 流式中转接口占位（Node ↔ Python 通信协议设计）
-- [ ] 积分系统 schema 占位（credits 字段、操作日志表）
-- [ ] 文件上传协调（S3 presigned URL 签发接口）
+- [x] Prisma Schema 扩展：Project / Message / CreditBalance / CreditLog
+- [x] Project CRUD Server Actions（`lib/actions/project.ts`）
+  - `createProject` / `listProjects` / `getProject` / `updateProjectTitle` / `deleteProject`
+  - `addMessage`（含所有权校验）
+  - 所有操作自动验证当前用户 session
+- [x] Zustand Store 重构：纯内存 mock → 数据库持久化
+  - `loadProjects` / `loadProjectMessages`（懒加载消息）
+  - `createConversation` 乐观更新 + DB 持久化 + AI 标题生成
+  - `addMessageToDb` 持久化消息
+  - `removeProject` 删除对话（含侧边栏删除按钮）
+- [x] SSE 流式中转接口 `/api/chat`
+  - 完整通信协议设计（event: token/tool_call/confirmation/done/error）
+  - 当前 mock 流式回复（逐字输出），后续替换为 Python 转发
+  - Auth 校验 + 项目所有权验证
+  - 消息自动持久化到 DB
+- [x] 积分系统 schema 占位（CreditBalance + CreditLog）
+- [ ] 文件上传协调（S3 presigned URL 签发接口）—— 推迟到 Phase 5
 
 ---
 
@@ -262,3 +273,11 @@
 - Skill 体系调整：新增「产品测评」，「儿童故事」→「课程教程」，「口播+B-roll」→「口播 Vlog」
 - Node.js BFF 职责梳理：Auth/DB/积分/文件/SSE 中转归 Node，AI Agent/生成归 Python
 - 新增 Phase 2.8（Node BFF 数据持久化）作为 Phase 3 前置任务
+
+**2026-03-18** Phase 2.8 Node BFF 数据持久化完成。关键决策：
+- Prisma Schema 扩展：Project / Message / CreditBalance / CreditLog
+- Server Actions 实现完整 CRUD（含 session 验证 + 所有权校验）
+- Zustand Store 从纯内存 mock 重构为 DB 持久化（乐观更新 + 懒加载）
+- `/api/chat` SSE 中转接口（mock 流式回复，通信协议设计完成）
+- 侧边栏新增删除对话功能
+- 下一步：Phase 3 — Python FastAPI 执行层

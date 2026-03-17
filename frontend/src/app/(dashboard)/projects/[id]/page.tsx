@@ -6,7 +6,7 @@ import { AppSidebar, SidebarToggle } from "@/components/shared/app-sidebar"
 import { useProjectsStore } from "@/lib/store/projects"
 import type { Message } from "@/lib/types"
 
-// ─── Mock AI responses ──────────────────────────────────────────────────────
+// ─── Mock AI responses（后续替换为 Python SSE 流式回复）─────────────────────
 const mockReplies = [
   `我理解你的需求了。在开始之前，我想确认几个关键点：
 
@@ -48,6 +48,22 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const conversation = useProjectsStore((s) => s.conversations.find((c) => c.id === id))
   const setActiveId = useProjectsStore((s) => s.setActiveId)
   const addMessage = useProjectsStore((s) => s.addMessage)
+  const addMessageToDb = useProjectsStore((s) => s.addMessageToDb)
+  const loadProjectMessages = useProjectsStore((s) => s.loadProjectMessages)
+  const loaded = useProjectsStore((s) => s.loaded)
+  const loadProjects = useProjectsStore((s) => s.loadProjects)
+
+  // Load projects list if not loaded (direct page visit)
+  useEffect(() => {
+    if (!loaded) loadProjects()
+  }, [loaded, loadProjects])
+
+  // Load messages for this project from DB
+  useEffect(() => {
+    if (loaded && conversation && conversation.messages.length === 0) {
+      loadProjectMessages(id)
+    }
+  }, [id, loaded, conversation, loadProjectMessages])
 
   // Set active conversation
   useEffect(() => {
@@ -69,6 +85,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   }, [input])
 
   // Simulate AI reply when a new user message has no following assistant message
+  // TODO: Replace with real Python SSE streaming
   useEffect(() => {
     if (!conversation) return
     const msgs = conversation.messages
@@ -78,34 +95,38 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
     // Simulate typing delay
     setIsTyping(true)
-    const timer = setTimeout(() => {
-      const reply: Message = {
-        id: `msg-${Date.now()}`,
-        role: "assistant",
-        type: "text",
-        content: mockReplies[replyIndex.current % mockReplies.length],
-      }
+    const timer = setTimeout(async () => {
+      const content = mockReplies[replyIndex.current % mockReplies.length]
       replyIndex.current++
-      addMessage(id, reply)
+      try {
+        // Persist mock reply to DB
+        await addMessageToDb(id, { role: "assistant", type: "text", content })
+      } catch {
+        // Fallback: add locally only
+        addMessage(id, {
+          id: `msg-${Date.now()}`,
+          role: "assistant",
+          type: "text",
+          content,
+        })
+      }
       setIsTyping(false)
     }, 1200)
 
     return () => clearTimeout(timer)
-  }, [conversation?.messages.length, conversation, id, addMessage])
+  }, [conversation?.messages.length, conversation, id, addMessage, addMessageToDb])
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim() || isTyping) return
-    const msg: Message = {
-      id: `msg-${Date.now()}`,
-      role: "user",
-      type: "text",
-      content: input.trim(),
-    }
-    addMessage(id, msg)
+    const content = input.trim()
     setInput("")
-    // Reset textarea height
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"
+    if (textareaRef.current) textareaRef.current.style.height = "auto"
+
+    try {
+      await addMessageToDb(id, { role: "user", type: "text", content })
+    } catch {
+      // Fallback: local only
+      addMessage(id, { id: `msg-${Date.now()}`, role: "user", type: "text", content })
     }
   }
 

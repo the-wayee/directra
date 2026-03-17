@@ -6,6 +6,15 @@ import { motion } from "framer-motion"
 import { AppSidebar, SidebarToggle } from "@/components/shared/app-sidebar"
 import { useProjectsStore } from "@/lib/store/projects"
 
+// Load projects on first mount
+function useLoadProjects() {
+  const loadProjects = useProjectsStore((s) => s.loadProjects)
+  const loaded = useProjectsStore((s) => s.loaded)
+  useEffect(() => {
+    if (!loaded) loadProjects()
+  }, [loaded, loadProjects])
+}
+
 const suggestions = [
   {
     icon: "🎬",
@@ -32,10 +41,13 @@ const suggestions = [
 export default function HomePage() {
   const router = useRouter()
   const [input, setInput] = useState("")
+  const [sending, setSending] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const createConversation = useProjectsStore((s) => s.createConversation)
   const setActiveId = useProjectsStore((s) => s.setActiveId)
+
+  useLoadProjects()
 
   // Clear active conversation when on home
   useEffect(() => {
@@ -50,10 +62,15 @@ export default function HomePage() {
     el.style.height = Math.min(el.scrollHeight, 200) + "px"
   }, [input])
 
-  const handleSubmit = () => {
-    if (!input.trim()) return
-    const projectId = createConversation(input.trim())
-    router.push(`/projects/${projectId}`)
+  const handleSubmit = async () => {
+    if (!input.trim() || sending) return
+    setSending(true)
+    try {
+      const projectId = await createConversation(input.trim())
+      router.push(`/projects/${projectId}`)
+    } catch {
+      setSending(false)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -142,9 +159,9 @@ export default function HomePage() {
                 </div>
                 <button
                   onClick={handleSubmit}
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || sending}
                   className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all cursor-pointer ${
-                    input.trim()
+                    input.trim() && !sending
                       ? "bg-violet-600 text-white hover:bg-violet-500 shadow-sm"
                       : "bg-slate-100 text-slate-400"
                   }`}
